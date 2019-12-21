@@ -109,7 +109,36 @@ class Game_2048(Metadata):
         self.draw_table()
         if not self.possible_to_make_any_move():
             self.show_score()
-            
+
+    # TODO                                                       POSSIBILITY TO MAKE MOVES
+    def possible_to_make_horizontal_move(self):
+        copy_board = deepcopy(self.board)
+        for r in range(self.size):
+            row = copy_board[r]
+            copy_board[r] = Game_2048.combined_function(row)
+        for r in range(self.size):
+            for c in range(self.size):
+                if copy_board[r][c] == 0:
+                    return True
+        return False
+
+    def possible_to_make_vertical_move(self):
+        copy_board = deepcopy(self.board)
+        new_board = copy_board.transpose()
+        for i in range(self.size):
+            new_board[i] = Game_2048.combined_function(new_board[i])
+        copy_board = new_board.transpose()
+        for r in range(self.size):
+            for c in range(self.size):
+                if copy_board[r][c] == 0:
+                    return True
+        return False
+
+    def possible_to_make_any_move(self):
+        if self.possible_to_make_horizontal_move() or self.possible_to_make_vertical_move():
+            return True
+        return False
+
     #  TODO                                                    METHODS for MOVING
     @staticmethod
     def delete_zeros_in_array(arr):
