@@ -267,3 +267,41 @@ class Game_2048(Metadata):
             moved_array = Game_2048.moving_elements(no_zero_array)
             return_zeros_array = Game_2048.return_zeros_to_array(moved_array, length_of_your_array)
             return return_zeros_array
+
+
+def game_loop(s_s):
+    new = Game_2048(s_s)
+
+    while new.run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit_game()
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pass
+
+                if event.key == pygame.K_r:
+                    if new.show_record:
+                        new.show_record = False
+                    else:
+                        new.show_record = True
+
+                if event.key == pygame.K_SPACE:
+                    game_loop(s_s)
+
+                if event.key == pygame.K_UP:
+                    new.move_up()
+
+                if event.key == pygame.K_DOWN:
+                    new.move_down()
+
+                if event.key == pygame.K_LEFT:
+                    new.move_left()
+
+                if event.key == pygame.K_RIGHT:
+                    new.move_right()
+
+        # TODO                                                                                       REDRAWING WINDOW
+        new.redraw_screen()
+        pygame.display.update()
