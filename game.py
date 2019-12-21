@@ -269,6 +269,50 @@ class Game_2048(Metadata):
             return return_zeros_array
 
 
+def intro_loop():
+    intro_screen = pygame.display.set_mode((Metadata.DISPLAY_WIDTH, Metadata.DISPLAY_HEIGHT))
+    run = True
+
+    button_font = pygame.font.Font("freesansbold.ttf", 20)
+    btn_width = int(Metadata.DISPLAY_WIDTH * 0.75)
+    btn_height = int(Metadata.DISPLAY_HEIGHT * 0.25)
+
+    def button(txt, x, y, btn_w, btn_h, c, c_c, action=None):
+        mouse = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+
+        if x + btn_w > mouse[0] > x and y < mouse[1] < y + btn_h:
+            pygame.draw.rect(intro_screen, c_c, (x, y, btn_w, btn_h))
+            if click[0] == 1 and action is not None:
+                game_loop(action)
+        else:
+            pygame.draw.rect(intro_screen, c, (x, y, btn_w, btn_h))
+
+        buttonSurf = button_font.render(txt, True, Metadata.BLACK)
+        buttonRect = buttonSurf.get_rect()
+        buttonRect.center = (x + btn_w // 2, y + btn_h // 2)
+        intro_screen.blit(buttonSurf, buttonRect)
+
+    def redraw_screen():
+        intro_screen.fill(Metadata.WHITE)
+        # button(txt, x, y, btn_w, btn_h, c, c_c, action=None)
+        button("3x3", Metadata.DISPLAY_WIDTH//2 - btn_width//2, Metadata.DISPLAY_HEIGHT//4 - btn_height//2, btn_width, btn_height, Metadata.LIGHT_GREEN, Metadata.GREEN, 3)
+        button("4x4", Metadata.DISPLAY_WIDTH//2 - btn_width//2, 2 * Metadata.DISPLAY_HEIGHT//4 - btn_height//2, btn_width, btn_height, Metadata.LIGHT_GREEN, Metadata.GREEN, 4)
+        button("5x5", Metadata.DISPLAY_WIDTH//2 - btn_width//2, 3 * Metadata.DISPLAY_HEIGHT//4 - btn_height//2, btn_width, btn_height, Metadata.LIGHT_GREEN, Metadata.GREEN, 5)
+
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit_game()
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    quit_game()
+
+        redraw_screen()
+        pygame.display.update()
+
+
 def game_loop(s_s):
     new = Game_2048(s_s)
 
@@ -279,7 +323,7 @@ def game_loop(s_s):
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    pass
+                    intro_loop()
 
                 if event.key == pygame.K_r:
                     if new.show_record:
@@ -293,15 +337,22 @@ def game_loop(s_s):
                 if event.key == pygame.K_UP:
                     new.move_up()
 
+
                 if event.key == pygame.K_DOWN:
                     new.move_down()
+
 
                 if event.key == pygame.K_LEFT:
                     new.move_left()
 
+
                 if event.key == pygame.K_RIGHT:
                     new.move_right()
+
 
         # TODO                                                                                       REDRAWING WINDOW
         new.redraw_screen()
         pygame.display.update()
+
+
+intro_loop()
