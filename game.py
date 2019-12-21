@@ -110,6 +110,47 @@ class Game_2048(Metadata):
         if not self.possible_to_make_any_move():
             self.show_score()
 
+    # TODO                                               SHOWING RECORD
+    def max_number(self):
+        max_number = 0
+        for r in range(self.size):
+            for c in range(self.size):
+                if self.board[r][c] > max_number:
+                    max_number = self.board[r][c]
+        return max_number
+
+    def draw_blur_screen(self):
+        s = pygame.Surface((self.DISPLAY_WIDTH, self.DISPLAY_HEIGHT))
+        s.set_alpha(50)
+        s.fill(self.RED)
+        self.SCREEN.blit(s, (0, 0))
+
+    def draw_score(self):
+        record_num = int(self.max_number())
+        record_surface = self.record_font.render(str(record_num), True, self.GREEN)
+        record_rect = record_surface.get_rect()
+        record_rect.center = (self.DISPLAY_WIDTH // 2, self.DISPLAY_HEIGHT // 2)
+        self.SCREEN.blit(record_surface, record_rect)
+
+    def draw_options(self):
+        option1_text = "Press [SPACE] to RESTART"
+        option1_surface = self.options_font.render(option1_text, True, self.RED)
+        option1_rect = option1_surface.get_rect()
+        option1_rect.center = (self.DISPLAY_WIDTH // 2, self.DISPLAY_HEIGHT // 4)
+
+        option2_text = "Press [ESCAPE] to CHANGE MODE"
+        option2_surface = self.options_font.render(option2_text, True, self.RED)
+        option2_rect = option2_surface.get_rect()
+        option2_rect.center = (self.DISPLAY_WIDTH // 2, self.DISPLAY_HEIGHT // 10 * 3)
+
+        self.SCREEN.blit(option1_surface, option1_rect)
+        self.SCREEN.blit(option2_surface, option2_rect)
+
+    def show_score(self):
+        self.draw_blur_screen()
+        self.draw_score()
+        self.draw_options()
+
     # TODO                                                       POSSIBILITY TO MAKE MOVES
     def possible_to_make_horizontal_move(self):
         copy_board = deepcopy(self.board)
@@ -138,6 +179,33 @@ class Game_2048(Metadata):
         if self.possible_to_make_horizontal_move() or self.possible_to_make_vertical_move():
             return True
         return False
+
+    # TODO                                                       MOVING METHODS
+    def move_up(self):
+        for c in range(self.size):
+            self.board[c] = Game_2048.combined_function(self.board[c])
+        self.add_new_num_in_random_position()
+
+    def move_down(self):
+        for c in range(self.size):
+            new_col = Game_2048.combined_function(self.board[c][::-1])
+            self.board[c] = new_col[::-1]
+        self.add_new_num_in_random_position()
+
+    def move_left(self):
+        new_board = self.board.transpose()
+        for i in range(self.size):
+            new_board[i] = Game_2048.combined_function(new_board[i])
+        self.board = new_board.transpose()
+        self.add_new_num_in_random_position()
+
+    def move_right(self):
+        new_board = self.board.transpose()
+        for i in range(self.size):
+            new_board[i] = Game_2048.combined_function(new_board[i][::-1])
+            new_board[i] = new_board[i][::-1]
+        self.board = new_board.transpose()
+        self.add_new_num_in_random_position()
 
     #  TODO                                                    METHODS for MOVING
     @staticmethod
