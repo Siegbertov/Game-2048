@@ -44,3 +44,68 @@ class Game_2048(Metadata):
         self.SCREEN = pygame.display.set_mode((self.DISPLAY_WIDTH, self.DISPLAY_HEIGHT))
         self.run = True
         self.show_record = False
+
+    def board_has_at_least_one_zero(self):
+        for r in range(self.size):
+            for c in range(self.size):
+                if self.board[r][c] == 0:
+                    return True
+        return False
+
+    # TODO                                            CREATING RANDOM NUM
+    def all_free_ceils_with_zero(self):
+        free_ceils = []
+        for r in range(self.size):
+            for c in range(self.size):
+                if self.board[r][c] == 0:
+                    free_ceils.append([r, c])
+        return free_ceils
+
+    def add_new_num_in_random_position(self):
+        if self.board_has_at_least_one_zero():
+            all_possible_position = self.all_free_ceils_with_zero()
+            rand_pos = random.choice(all_possible_position)
+            r, c = rand_pos[0], rand_pos[1]
+            self.board[r][c] = 2
+
+    # TODO                                             DRAWING WINDOW
+    def draw_border(self):
+        pygame.draw.rect(self.SCREEN, self.BLACK, (0, 0, self.DISPLAY_WIDTH, self.DISPLAY_HEIGHT), 4)
+
+    def draw_table(self):
+        self.draw_border()
+        for i in range(1, self.size):
+            pygame.draw.line(self.SCREEN, self.BLACK, (0 , i * self.ceil_width ), (self.DISPLAY_WIDTH, i * self.ceil_width), 4)
+            pygame.draw.line(self.SCREEN, self.BLACK, (i * self.ceil_width,0), (i * self.ceil_width,self.DISPLAY_HEIGHT), 4)
+
+    def draw_blur_ceil(self):
+        for r in range(self.size):
+            for c in range(self.size):
+                num = int(self.board[r][c])
+                s = pygame.Surface((self.ceil_width, self.ceil_width))
+                s.set_alpha(220)
+                if num == 0:
+                    s.fill(self.COLORS[num])
+                    self.SCREEN.blit(s, (r * self.ceil_width, c * self.ceil_width))
+                else:
+                    col_pos = int(math.log2(num))
+                    s.fill(self.COLORS[col_pos])
+                    self.SCREEN.blit(s, (r * self.ceil_width, c * self.ceil_width))
+
+    def draw_numbers(self):
+        for r in range(self.size):
+            for c in range(self.size):
+                num = int(self.board[r][c])
+                if num != 0:
+                    text_surface = self.num_font.render(str(num), True, self.BLACK)
+                    text_rect = text_surface.get_rect()
+                    text_rect.center = (r * self.ceil_width + self.ceil_width//2, c * self.ceil_width + self.ceil_width//2)
+                    self.SCREEN.blit(text_surface, text_rect)
+
+    def redraw_screen(self):
+        self.SCREEN.fill(self.WHITE)
+        self.draw_blur_ceil()
+        self.draw_numbers()
+        self.draw_table()
+        if not self.possible_to_make_any_move():
+            self.show_score()
