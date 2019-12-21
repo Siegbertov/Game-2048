@@ -109,3 +109,64 @@ class Game_2048(Metadata):
         self.draw_table()
         if not self.possible_to_make_any_move():
             self.show_score()
+            
+    #  TODO                                                    METHODS for MOVING
+    @staticmethod
+    def delete_zeros_in_array(arr):
+        result = []
+        for element in arr:
+            if element != 0:
+                result.append(element)
+        return result
+
+    @staticmethod
+    def moving_elements(arr):
+        result = []
+        pos = 0
+        while pos < len(arr) - 1:
+            left = arr[pos]
+            right = arr[pos + 1]
+            if left == right:
+                result.append(left + right)
+                pos += 1
+            elif left != right:
+                result.append(left)
+            pos += 1
+
+        nums = Game_2048.last_elem_repeat(arr)
+
+        if nums % 2 != 0:
+            result.append(arr[-1])
+
+        return result
+
+    @staticmethod
+    def last_elem_repeat(some_array):
+        last_result = some_array[-1]
+        nums = 0
+        length_arr = len(some_array)
+        for i in range(length_arr):
+            pos = length_arr - i - 1
+            if some_array[pos] == last_result:
+                nums += 1
+            else:
+                break
+        return nums
+
+    @staticmethod
+    def return_zeros_to_array(arr, num):
+        num -= len(arr)
+        for i in range(num):
+            arr.append(0)
+        return arr
+
+    @staticmethod
+    def combined_function(your_array):
+        length_of_your_array = len(your_array)
+        no_zero_array = Game_2048.delete_zeros_in_array(your_array)
+        if not no_zero_array:
+            return your_array
+        else:
+            moved_array = Game_2048.moving_elements(no_zero_array)
+            return_zeros_array = Game_2048.return_zeros_to_array(moved_array, length_of_your_array)
+            return return_zeros_array
